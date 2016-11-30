@@ -1,0 +1,38 @@
+﻿<div class="row">
+    <div class="col-xs-12">
+        <button class=" btn btn-primary" ng-click="Ctrl.EditButton();" ng-show="Ctrl.HasImg">
+            <i class="fa fa-pencil-square-o" aria-hidden="true"ng-hide ="Ctrl.EditMode"></i>
+            <i class="fa fa-times" aria-hidden="true"ng-show ="Ctrl.EditMode"></i>
+            {{Ctrl.EditButtonText}}
+        </button>
+        <button class="btn btn-primary" ng-click="Ctrl.Preview();" ng-show="Ctrl.EditMode">
+            <i class="fa fa-floppy-o" aria-hidden="true"></i>存檔
+        </button>
+        <button class="btn btn-primary" ng-click="Ctrl.LoadButton()" ng-show="!Ctrl.EditMode">
+            <i class="fa fa-folder-open" aria-hidden="true"></i> 讀取圖片
+        </button>
+        <input id="FileLoader" type="file" class="btn btn-primary" onchange="angular.element(this).scope().Ctrl.OnFile(this.files[0]);this.value ='' " style="display:none">
+        <button class="btn btn-primary pull-right" ng-click="Ctrl.Zoom(-0.1)" ng-show="Ctrl.EditMode"><i class="fa fa-search-minus" aria-hidden="true"></i></button>
+        <button class="btn btn-primary pull-right" ng-click="Ctrl.Zoom(0.1)" ng-show="Ctrl.EditMode"><i class="fa fa-search-plus" aria-hidden="true"></i></button>
+    </div>
+</div>
+<hr />
+<div class="row">
+    <div class="col-xs-12">
+        <div ng-if="Ctrl.DataUrl" class="img-container">
+            <!--<img class="img-responsive center-block" 
+                 ng-if="Ctrl.DataUrl"
+                 ng-src="{{Ctrl.DataUrl}}"
+                 ng-error="Ctrl.Error()">-->
+            <img class="img-responsive center-block" 
+                 ng-if="Ctrl.DataUrl"
+                 ng-src="{{Ctrl.DataUrl}}"
+                 ng-error="Ctrl.Error()"
+                 ng-cropper
+                 ng-cropper-proxy="cropperProxy"
+                 ng-cropper-show="showEvent"
+                 ng-cropper-hide="hideEvent"
+                 ng-cropper-options="Ctrl.options">
+        </div>
+    </div>
+</div>
