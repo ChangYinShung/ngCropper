@@ -31,18 +31,20 @@ app.controller('Main', function(Cropper) {
      ng-cropper-options="options"
      ng-cropper-show="'show.cropper'"
      ng-cropper-hide="'hide.cropper'">
-```
+```  
+Bootstrap 3  Customlized Template  
+
 ```html  
 <ng-cropper-template  
     width=""
     height=""
-    resultImg=""
-    isDone=""
+    result-img=""
+    is-done=""
     ctrl="">
 ```
-`Width、Height` :長寬(number)  
-`resultImg` : 上傳存檔圖片(base64)  
-`isDone`:判斷是否有編輯按鈕  
+`width、height` :長寬(number)  
+`result-img` : 上傳存檔圖片(base64)  
+`is-done`:判斷是否有編輯按鈕  
 `ctrl`: Controller  
 Read [Demo code](http://github.com/koorgoo/ngCropper/tree/master/demo) for detailed example.
 
