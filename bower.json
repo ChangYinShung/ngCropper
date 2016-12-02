@@ -4,7 +4,7 @@
     "dist/ngCropper.all.js",
     "dist/ngCropper.all.css",
     "directive/ngCropperTemplate.js",
-    "directive/ngCropperTemplate.html"
+    "directive/bootstrap3.tpl.html"
   ],
   "version": "0.4.1",
   "homepage": "https://github.com/koorgoo/ngCropper",

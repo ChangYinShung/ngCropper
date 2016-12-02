@@ -1,8 +1,9 @@
 ﻿(function () {
-    angular.module('ngCropper').component('ngCropperTemplate', ngCropperTemplate());
+    var app = angular.module('ngCropper');
+    app.component('ngCropperTemplate', ngCropperTemplate());
     function ngCropperTemplate() {
         return {
-            templateUrl: '/Scripts/Assets/Plugins/Library/ngCropperTemplate/ngCropperTemplate.html',
+            templateUrl: 'bootstrap3.tpl',
             controller: CropperUI,
             controllerAs: 'Ctrl',
             bindings: {
@@ -11,14 +12,13 @@
                 resultImg: '=',
                 imgUrl: '@?',
                 isDone: '=?',
-                ctrl:'=?'
+                ctrl: '=?'
             }
         };
     }
-    CropperUI.$inject = ['$timeout','$log', '$scope', 'Cropper','$element'];
-    function CropperUI($timeout,$log, $scope, Cropper, $element) {
+    CropperUI.$inject = ['$timeout', '$log', '$scope', 'Cropper', '$element'];
+    function CropperUI($timeout, $log, $scope, Cropper, $element) {
         /* jshint validthis:true */
-
         //存檔會存在resultImg
         //只有按儲存按鈕的時候才會修改resultImg
         //可以用來檢察有沒有結果。
@@ -34,7 +34,7 @@
         //var
         var finalSize = { width: vm.width, height: vm.height };
         var ratio = finalSize.width / finalSize.height;
-            
+
         vm.file;
         vm.data;
         vm.options = {};
@@ -49,7 +49,7 @@
         vm.HasImg = false;
         vm.EditMode = false;
         vm.EditButtonText = "編輯";
-        
+
         //functions
         vm.Preview = preview;
         vm.OnFile = onFile;
@@ -70,7 +70,7 @@
                 aspectRatio: ratio,
                 crop: function (dataNew) {
                     vm.data = dataNew;
-                    
+
                 },
                 zoomOnWheel: false,
                 dragMode: 'move'
@@ -80,7 +80,7 @@
                 //load image on server
                 vm.HasImg = true;
                 LoadImageFromUrl(getServerImgUrl());
-            } else if(vm.resultImg){
+            } else if (vm.resultImg) {
                 //if result image is available,use it
                 vm.DataUrl = vm.resultImg;
                 vm.HasImg = true;
@@ -119,7 +119,7 @@
                 Cropper.encode((vm.file = xhr.response))
                     .then(function (dataUrl) {
                         vm.DataUrl = dataUrl;
-                        
+
                     });
             }
             xhr.send();
@@ -185,6 +185,47 @@
         }
         function showCropper() { $scope.$broadcast($scope.showEvent); }
         function hideCropper() { $scope.$broadcast($scope.hideEvent); }
+    }
+
+
+    app.run(Bootstrap3Template);
+
+    Bootstrap3Template.$inject = ['$templateCache'];
+    function Bootstrap3Template($templateCache) {
+        $templateCache.put('bootstrap3.tpl', '   <div class="row">  ' +
+ '       <div class="col-xs-12">  ' +
+ '           <button class=" btn btn-primary" ng-click="Ctrl.EditButton();" ng-show="Ctrl.HasImg">  ' +
+ '               <i class="fa fa-pencil-square-o" aria-hidden="true"ng-hide ="Ctrl.EditMode"></i>  ' +
+ '               <i class="fa fa-times" aria-hidden="true"ng-show ="Ctrl.EditMode"></i>  ' +
+ '               {{Ctrl.EditButtonText}}  ' +
+ '           </button>  ' +
+ '           <button class="btn btn-primary" ng-click="Ctrl.Preview();" ng-show="Ctrl.EditMode">  ' +
+ '               <i class="fa fa-floppy-o" aria-hidden="true"></i>存檔  ' +
+ '           </button>  ' +
+ '           <button class="btn btn-primary" ng-click="Ctrl.LoadButton()" ng-show="!Ctrl.EditMode">  ' +
+ '               <i class="fa fa-folder-open" aria-hidden="true"></i> 讀取圖片  ' +
+ '           </button>  ' +
+ '           <input id="FileLoader" type="file" class="btn btn-primary" onchange="angular.element(this).scope().Ctrl.OnFile(this.files[0]);this.value =\'\' " style="display:none">  ' +
+ '           <button class="btn btn-primary pull-right" ng-click="Ctrl.Zoom(-0.1)" ng-show="Ctrl.EditMode"><i class="fa fa-search-minus" aria-hidden="true"></i></button>  ' +
+ '           <button class="btn btn-primary pull-right" ng-click="Ctrl.Zoom(0.1)" ng-show="Ctrl.EditMode"><i class="fa fa-search-plus" aria-hidden="true"></i></button>  ' +
+ '       </div>  ' +
+ '   </div>  ' +
+ '   <hr />  ' +
+ '   <div class="row">  ' +
+ '       <div class="col-xs-12">  ' +
+ '           <div ng-if="Ctrl.DataUrl" class="img-container">  ' +
+ '               <img class="img-responsive center-block"   ' +
+ '                    ng-if="Ctrl.DataUrl"  ' +
+ '                    ng-src="{{Ctrl.DataUrl}}"  ' +
+ '                    ng-error="Ctrl.Error()"  ' +
+ '                    ng-cropper  ' +
+ '                    ng-cropper-proxy="cropperProxy"  ' +
+ '                    ng-cropper-show="showEvent"  ' +
+ '                    ng-cropper-hide="hideEvent"  ' +
+ '                    ng-cropper-options="Ctrl.options">  ' +
+ '           </div>  ' +
+ '       </div>  ' +
+ '  </div>  ');
     }
 
 })();
