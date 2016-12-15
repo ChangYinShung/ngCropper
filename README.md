@@ -42,7 +42,7 @@ Bootstrap 3  Customlized Template
     is-done=""
     ctrl="">
 ```
-`width、height` :長寬(number)  
+`width、height` :長寬(number)  width:0,height:0
 `result-img` : 上傳存檔圖片(base64)  
 `is-done`:判斷是否有編輯按鈕  
 `ctrl`: Controller  
