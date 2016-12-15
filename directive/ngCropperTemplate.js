@@ -193,7 +193,6 @@
         function showCropper() { $scope.$broadcast($scope.showEvent); }
         function hideCropper() { $scope.$broadcast($scope.hideEvent); }
     }
-    }
 
 
     app.run(Bootstrap3Template);
