@@ -64,6 +64,8 @@
 
         /////////////////
         function activate() {
+            if (isNaN(ratio) || ratio == 0)
+                ratio = NaN;
             vm.options = {
                 viewMode: 0,
                 maximize: true,
@@ -76,16 +78,9 @@
                 dragMode: 'move'
             };
 
-            if (getServerImgUrl()) {
-                //load image on server
-                vm.HasImg = true;
-                LoadImageFromUrl(getServerImgUrl());
-            } else if (vm.resultImg) {
-                //if result image is available,use it
-                vm.DataUrl = vm.resultImg;
-                vm.HasImg = true;
-                vm.file = Cropper.decode(getResultData());
-            }
+
+            LoadImage();
+
             //watch EditMode
             $scope.$watch('Ctrl.EditMode', function (newValue) {
                 vm.isDone = !newValue;
@@ -96,33 +91,35 @@
             });
 
         }
-        function getServerImgUrl() {
-            return vm.imgUrl;
-            //return 'http://i.imgur.com/r2dqxw2.jpg';
-        }
-        function getResultData() {
-            return vm.resultImg;
-        }
         function setResultData(data) {
             vm.resultImg = data;
             vm.HasImg = true;
         }
+        function LoadImage() {
+            var url = vm.imgUrl;
+            if (!!url) {
+                vm.HasImg = true;
+                var blob = null;
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", url);
+                xhr.responseType = "blob";//force the HTTP response, response-type header to be blob
+                xhr.onload = function () {
+                    //xhr.response is now a blob object
+                    //then set file and dataurl
+                    Cropper.encode((vm.file = xhr.response))
+                        .then(function (dataUrl) {
+                            vm.DataUrl = dataUrl;
 
-        function LoadImageFromUrl(url) {
-            var blob = null;
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", url);
-            xhr.responseType = "blob";//force the HTTP response, response-type header to be blob
-            xhr.onload = function () {
-                //xhr.response is now a blob object
-                //then set file and dataurl
-                Cropper.encode((vm.file = xhr.response))
-                    .then(function (dataUrl) {
-                        vm.DataUrl = dataUrl;
-
-                    });
+                        });
+                }
+                xhr.send();
             }
-            xhr.send();
+            if (vm.resultImg) {
+                vm.DataUrl = vm.resultImg;
+                vm.HasImg = true;
+                vm.file = Cropper.decode(vm.resultImg);
+            }
+
         }
         function onFile(blob) {
             if (!blob) {
@@ -136,9 +133,18 @@
         };
         //存檔
         function preview() {
+            var w = vm.width;
+            var h = vm.height;
+            if (isNaN(ratio))
+            {
+                var image = $scope.cropper.first('getImageData');
+                w = image.width;
+                h = image.height;
+            }
+
             var dataUrl = $scope.cropper.first('getCroppedCanvas', {
-                width: vm.width,
-                height: vm.height
+                width: w,
+                height: h
             }).toDataURL();
             setResultData(dataUrl);
             EditDisable();
@@ -157,7 +163,6 @@
             vm.EditMode = true;
             vm.EditButtonText = "放棄編輯";
             vm.resultImg = vm.DataUrl;
-            EditEnable.isReady = true;
             $timeout(showCropper);
         }
         //離開編輯模式
@@ -168,6 +173,8 @@
             vm.DataUrl = vm.resultImg;
 
         }
+
+        //UI
         function LoadButton() {
             $element.find('#FileLoader').trigger('click');
         }
@@ -185,6 +192,7 @@
         }
         function showCropper() { $scope.$broadcast($scope.showEvent); }
         function hideCropper() { $scope.$broadcast($scope.hideEvent); }
+    }
     }
 
 
