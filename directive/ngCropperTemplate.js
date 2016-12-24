@@ -7,8 +7,8 @@
             controller: CropperUI,
             controllerAs: 'Ctrl',
             bindings: {
-                width: '@',
-                height: '@',
+                width: '=',
+                height: '=',
                 resultImg: '=',
                 imgUrl: '@?',
                 isDone: '=?',
@@ -24,34 +24,37 @@
         //可以用來檢察有沒有結果。
 
         var vm = this;
-        vm.ctrl = vm;
+
         //directive parameters
         vm.resultImg;
         vm.imgUrl;
         vm.width;
         vm.height;
         vm.isDone;
-        //var
-        var finalSize = { width: vm.width, height: vm.height };
-        var ratio = finalSize.width / finalSize.height;
+        vm.ctrl = vm;
+        //var parameters
+        var ratio = 0;//finalSize.width / finalSize.height;
 
-        vm.file;
-        vm.data;
-        vm.options = {};
-        vm.DataUrl = "";
-
+        //$scope parameters
         $scope.cropper = {};
         $scope.cropperProxy = 'cropper.first';
         $scope.showEvent = 'show';
         $scope.hideEvent = 'hide';
 
-        //ui variable
+        //vm parameters
+        vm.file;
+        vm.data;
+        vm.options = {};
+        /*
+         * @description 
+         */
+        vm.DataUrl = "";
         vm.HasImg = false;
         vm.EditMode = false;
         vm.EditButtonText = "編輯";
 
         //functions
-        vm.Preview = preview;
+        vm.Save = save;
         vm.OnFile = onFile;
         vm.Zoom = zoom;
         vm.ZoomTo = zoomTo;
@@ -64,24 +67,30 @@
 
         /////////////////
         function activate() {
-            if (isNaN(ratio) || ratio == 0)
-                ratio = NaN;
+            setupWatch();
+            LoadImage();
+        }
+
+        function setupOptions() {
+            vm.ratio = vm.width / vm.height;
+            if (isNaN(vm.ratio) || vm.ratio == 0)
+                vm.ratio = NaN;
             vm.options = {
                 viewMode: 0,
                 maximize: true,
-                aspectRatio: ratio,
+                aspectRatio: vm.ratio,
                 crop: function (dataNew) {
                     vm.data = dataNew;
-
                 },
                 zoomOnWheel: false,
                 dragMode: 'move'
             };
-
-
-            LoadImage();
-
+        }
+        function setupWatch() {
             //watch EditMode
+            $scope.$watchGroup(['Ctrl.width', 'Ctrl.height'], function (newValue) {
+                setupOptions();
+            });
             $scope.$watch('Ctrl.EditMode', function (newValue) {
                 vm.isDone = !newValue;
             });
@@ -89,11 +98,6 @@
                 if (!newValue) return;
                 $scope.cropper.first('setData', { x: 0, y: 0 });
             });
-
-        }
-        function setResultData(data) {
-            vm.resultImg = data;
-            vm.HasImg = true;
         }
         function LoadImage() {
             var url = vm.imgUrl;
@@ -121,6 +125,9 @@
             }
 
         }
+
+
+
         function onFile(blob) {
             if (!blob) {
                 return;
@@ -132,7 +139,7 @@
             });
         };
         //存檔
-        function preview() {
+        function save() {
             var w = vm.width;
             var h = vm.height;
             if (isNaN(ratio)) {
@@ -140,12 +147,12 @@
                 w = image.width;
                 h = image.height;
             }
-
             var dataUrl = $scope.cropper.first('getCroppedCanvas', {
                 width: w,
                 height: h
             }).toDataURL();
-            setResultData(dataUrl);
+            vm.resultImg = dataUrl;
+            vm.HasImg = true;
             EditDisable();
         };
         //ui functions
@@ -198,14 +205,15 @@
 
     Bootstrap3Template.$inject = ['$templateCache'];
     function Bootstrap3Template($templateCache) {
-        $templateCache.put('bootstrap3.tpl', '   <div class="row">  ' +
+        $templateCache.put('bootstrap3.tpl',
+ '   <div class="row">  ' +
  '       <div class="col-xs-12">  ' +
  '           <button class=" btn btn-primary" ng-click="Ctrl.EditButton();" ng-show="Ctrl.HasImg">  ' +
  '               <i class="fa fa-pencil-square-o" aria-hidden="true"ng-hide ="Ctrl.EditMode"></i>  ' +
  '               <i class="fa fa-times" aria-hidden="true"ng-show ="Ctrl.EditMode"></i>  ' +
  '               {{Ctrl.EditButtonText}}  ' +
  '           </button>  ' +
- '           <button class="btn btn-primary" ng-click="Ctrl.Preview();" ng-show="Ctrl.EditMode">  ' +
+ '           <button class="btn btn-primary" ng-click="Ctrl.Save();" ng-show="Ctrl.EditMode">  ' +
  '               <i class="fa fa-floppy-o" aria-hidden="true"></i>存檔  ' +
  '           </button>  ' +
  '           <button class="btn btn-primary" ng-click="Ctrl.LoadButton()" ng-show="!Ctrl.EditMode">  ' +
