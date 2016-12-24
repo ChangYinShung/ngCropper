@@ -135,8 +135,7 @@
         function preview() {
             var w = vm.width;
             var h = vm.height;
-            if (isNaN(ratio))
-            {
+            if (isNaN(ratio)) {
                 var image = $scope.cropper.first('getImageData');
                 w = image.width;
                 h = image.height;
