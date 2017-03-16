@@ -36,12 +36,14 @@ Bootstrap 3  Customlized Template
 
 ```html  
 <ng-cropper-template  
+    template-type="bootstrap3"
     width=""
     height=""
     result-img=""
     is-done=""
     ctrl="">
 ```
+`type`:bootstrap3,angularMaterial  
 `width、height` :長寬(number)  width:0,height:0 不固定長寬  
 `result-img` : 上傳存檔圖片(base64)  
 `is-done`:判斷是否有編輯按鈕  

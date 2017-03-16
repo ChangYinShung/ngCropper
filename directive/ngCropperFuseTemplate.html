@@ -1,0 +1,36 @@
+﻿<md-button class="md-fab" ng-click="Ctrl.Zoom(-0.1)" ng-show="Ctrl.EditMode" >
+    <md-icon md-font-icon="icon-magnify-minus"></md-icon>
+</md-button>
+<md-button class="md-fab" ng-click="Ctrl.Zoom(0.1)" ng-show="Ctrl.EditMode">
+    <md-icon md-font-icon="icon-magnify-plus"></md-icon>
+</md-button>
+<div layout="row" layout-align="center center" >
+    <md-button class="md-accent md-raised" ng-click="Ctrl.EditButton();" ng-show="Ctrl.HasImg">
+        <md-icon md-font-icon="icon-pencil" ng-hide="Ctrl.EditMode"></md-icon>
+        <md-icon md-font-icon="icon-close" ng-show="Ctrl.EditMode"></md-icon>
+        {{Ctrl.EditButtonText}}
+    </md-button>
+    <md-button class="md-accent md-raised" ng-click="Ctrl.Save();" ng-show="Ctrl.EditMode">
+        <md-icon md-font-icon="icon-floppy"></md-icon>存檔
+    </md-button>
+    <md-button class="md-accent md-raised" ng-click="Ctrl.LoadButton()" ng-show="!Ctrl.EditMode">
+        <md-icon md-font-icon="icon-file-image-box"></md-icon>讀取圖片
+    </md-button>
+    <input id="FileLoader" type="file" class="btn btn-primary" onchange="angular.element(this).scope().Ctrl.OnFile(this.files[0]);this.value ='' " style="display:none">
+    
+</div>
+
+
+<md-divider></md-divider>
+<div layout="row" layout-align="center center">
+    <div ng-if="Ctrl.DataUrl">
+        <img ng-if="Ctrl.DataUrl"
+             ng-src="{{Ctrl.DataUrl}}"
+             ng-error="Ctrl.Error()"
+             ng-cropper
+             ng-cropper-proxy="cropperProxy"
+             ng-cropper-show="showEvent"
+             ng-cropper-hide="hideEvent"
+             ng-cropper-options="Ctrl.options">
+    </div>
+</div>

@@ -3,10 +3,11 @@
     app.component('ngCropperTemplate', ngCropperTemplate());
     function ngCropperTemplate() {
         return {
-            templateUrl: 'bootstrap3.tpl',
+            templateUrl: getTemplate,
             controller: CropperUI,
             controllerAs: 'Ctrl',
             bindings: {
+                templateType: '@?', //bootstrap3 , angularMaterial
                 width: '=',
                 height: '=',
                 resultImg: '=',
@@ -16,6 +17,17 @@
             }
         };
     }
+
+    getTemplate.$inject = ['$element', '$attrs'];
+    function getTemplate($element, $attrs) {
+        if (!$attrs.templateType) {
+            console.warn("豐碩:ng-cropper-template need be 'bootstrap3' or 'angularMaterial' : Default is bootstrap3")
+            return 'bootstrap3.tpl';
+        }
+        var result = $attrs.templateType + '.tpl';
+        return result;
+    }
+
     CropperUI.$inject = ['$timeout', '$log', '$scope', 'Cropper', '$element'];
     function CropperUI($timeout, $log, $scope, Cropper, $element) {
         /* jshint validthis:true */
@@ -33,7 +45,6 @@
         vm.isDone;
         vm.ctrl = vm;
         //var parameters
-
         var ratio = 0;//finalSize.width / finalSize.height;
 
         //$scope parameters
@@ -49,8 +60,6 @@
         /*
          * @description 
          */
-        vm.ogImage = null;//保存原本圖片
-        vm.ShowCancel = false;
         vm.DataUrl = "";
         vm.HasImg = false;
         vm.EditMode = false;
@@ -63,7 +72,6 @@
         vm.ZoomTo = zoomTo;
         vm.EditButton = editButton;
         vm.LoadButton = LoadButton;
-        vm.CancelButton = CancelButton;
         //todo
         vm.Error = Error;
 
@@ -116,13 +124,14 @@
                     //then set file and dataurl
                     Cropper.encode((vm.file = xhr.response))
                         .then(function (dataUrl) {
-                            vm.DataUrl = vm.ogImage = dataUrl;
+                            vm.DataUrl = dataUrl;
+
                         });
                 }
                 xhr.send();
             }
             if (vm.resultImg) {
-                vm.DataUrl = vm.ogImage = vm.resultImg;
+                vm.DataUrl = vm.resultImg;
                 vm.HasImg = true;
                 vm.file = Cropper.decode(vm.resultImg);
             }
@@ -138,9 +147,7 @@
             vm.file = blob;
             Cropper.encode(vm.file).then(function (dataUrl) {
                 vm.DataUrl = dataUrl;
-
                 EditEnable();
-                vm.ShowCancel = true; //顯示取消按鈕
             });
         };
         //存檔
@@ -156,9 +163,8 @@
                 width: w,
                 height: h
             }).toDataURL();
-            vm.resultImg = vm.ogImage = dataUrl;
+            vm.resultImg = dataUrl;
             vm.HasImg = true;
-            vm.ShowCancel = false;
             EditDisable();
         };
         //ui functions
@@ -182,16 +188,7 @@
             vm.EditMode = false;
             vm.EditButtonText = "編輯";
             $timeout(hideCropper);
-
             vm.DataUrl = vm.resultImg;
-        }
-        //取消
-        function CancelButton() {
-            vm.ShowCancel = false;
-            EditDisable();
-            vm.DataUrl = vm.ogImage;
-            vm.resultImg = vm.ogImage;
-            //vm.DataUrl = vm.ogImage;
 
         }
 
@@ -223,10 +220,6 @@
         $templateCache.put('bootstrap3.tpl',
  '   <div class="row">  ' +
  '       <div class="col-xs-12">  ' +
- '           <button class="btn btn-warning" ng-click="Ctrl.CancelButton();" ng-show="Ctrl.ogImage && Ctrl.ShowCancel">  ' +
- '               <i class="fa fa-repeat" aria-hidden="true"></i>  ' +
- '               復原  ' +
- '           </button>  ' +
  '           <button class=" btn btn-primary" ng-click="Ctrl.EditButton();" ng-show="Ctrl.HasImg">  ' +
  '               <i class="fa fa-pencil-square-o" aria-hidden="true"ng-hide ="Ctrl.EditMode"></i>  ' +
  '               <i class="fa fa-times" aria-hidden="true"ng-show ="Ctrl.EditMode"></i>  ' +
@@ -259,6 +252,41 @@
  '           </div>  ' +
  '       </div>  ' +
  '  </div>  ');
+        $templateCache.put('angularMaterial.tpl',
+'   <md-button class="md-fab" ng-click="Ctrl.Zoom(-0.1)" ng-show="Ctrl.EditMode" >  ' +
+'       <md-icon md-font-icon="icon-magnify-minus"></md-icon>  ' +
+'   </md-button>  ' +
+'   <md-button class="md-fab" ng-click="Ctrl.Zoom(0.1)" ng-show="Ctrl.EditMode">  ' +
+'       <md-icon md-font-icon="icon-magnify-plus"></md-icon>  ' +
+'   </md-button>  ' +
+'   <div layout="row" layout-align="center center" >  ' +
+'       <md-button class="md-accent md-raised" ng-click="Ctrl.EditButton();" ng-show="Ctrl.HasImg">  ' +
+'           <md-icon md-font-icon="icon-pencil" ng-hide="Ctrl.EditMode"></md-icon>  ' +
+'           <md-icon md-font-icon="icon-close" ng-show="Ctrl.EditMode"></md-icon>  ' +
+'           {{Ctrl.EditButtonText}}  ' +
+'       </md-button>  ' +
+'       <md-button class="md-accent md-raised" ng-click="Ctrl.Save();" ng-show="Ctrl.EditMode">  ' +
+'           <md-icon md-font-icon="icon-floppy"></md-icon>存檔  ' +
+'       </md-button>  ' +
+'       <md-button class="md-accent md-raised" ng-click="Ctrl.LoadButton()" ng-show="!Ctrl.EditMode">  ' +
+'           <md-icon md-font-icon="icon-file-image-box"></md-icon>讀取圖片  ' +
+'       </md-button>  ' +
+'       <input id="FileLoader" type="file" class="btn btn-primary" onchange="angular.element(this).scope().Ctrl.OnFile(this.files[0]);this.value =\'\' " style="display:none">  ' +
+'   </div>  ' +
+'   <md-divider></md-divider>  ' +
+'   <div layout="row" layout-align="center center">  ' +
+'       <div ng-if="Ctrl.DataUrl">  ' +
+'           <img ng-if="Ctrl.DataUrl"  ' +
+'                ng-src="{{Ctrl.DataUrl}}"  ' +
+'                ng-error="Ctrl.Error()"  ' +
+'                ng-cropper  ' +
+'                ng-cropper-proxy="cropperProxy"  ' +
+'                ng-cropper-show="showEvent"  ' +
+'                ng-cropper-hide="hideEvent"  ' +
+'                ng-cropper-options="Ctrl.options">  ' +
+'       </div>  ' +
+'  </div>  ');
+
     }
 
 })();
