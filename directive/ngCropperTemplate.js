@@ -60,6 +60,8 @@
         /*
          * @description 
          */
+        vm.ogImage = null;//保存原本圖片
+        vm.ShowCancel = false;
         vm.DataUrl = "";
         vm.HasImg = false;
         vm.EditMode = false;
@@ -140,6 +142,7 @@
 
 
 
+
         function onFile(blob) {
             if (!blob) {
                 return;
@@ -147,7 +150,9 @@
             vm.file = blob;
             Cropper.encode(vm.file).then(function (dataUrl) {
                 vm.DataUrl = dataUrl;
+
                 EditEnable();
+                vm.ShowCancel = true; //顯示取消按鈕
             });
         };
         //存檔
@@ -163,8 +168,9 @@
                 width: w,
                 height: h
             }).toDataURL();
-            vm.resultImg = dataUrl;
+            vm.resultImg = vm.ogImage = dataUrl;
             vm.HasImg = true;
+            vm.ShowCancel = false;
             EditDisable();
         };
         //ui functions
@@ -188,7 +194,16 @@
             vm.EditMode = false;
             vm.EditButtonText = "編輯";
             $timeout(hideCropper);
+
             vm.DataUrl = vm.resultImg;
+        }
+        //取消
+        function CancelButton() {
+            vm.ShowCancel = false;
+            EditDisable();
+            vm.DataUrl = vm.ogImage;
+            vm.resultImg = vm.ogImage;
+            //vm.DataUrl = vm.ogImage;
 
         }
 
@@ -220,6 +235,10 @@
         $templateCache.put('bootstrap3.tpl',
  '   <div class="row">  ' +
  '       <div class="col-xs-12">  ' +
+ '           <button class="btn btn-warning" ng-click="Ctrl.CancelButton();" ng-show="Ctrl.ogImage && Ctrl.ShowCancel">  ' +
+ '               <i class="fa fa-repeat" aria-hidden="true"></i>  ' +
+ '               復原  ' +
+ '           </button>  ' +
  '           <button class=" btn btn-primary" ng-click="Ctrl.EditButton();" ng-show="Ctrl.HasImg">  ' +
  '               <i class="fa fa-pencil-square-o" aria-hidden="true"ng-hide ="Ctrl.EditMode"></i>  ' +
  '               <i class="fa fa-times" aria-hidden="true"ng-show ="Ctrl.EditMode"></i>  ' +
@@ -260,6 +279,11 @@
 '       <md-icon md-font-icon="icon-magnify-plus"></md-icon>  ' +
 '   </md-button>  ' +
 '   <div layout="row" layout-align="center center" >  ' +
+'       <md-button class="md-warn md-raised" ng-click="Ctrl.CancelButton();" ng-show="Ctrl.ogImage && Ctrl.ShowCancel">  ' +
+'           <md-icon md-font-icon="icon-refresh"></md-icon>  ' +
+'           復原 ' +
+'       </md-button>  ' +
+
 '       <md-button class="md-accent md-raised" ng-click="Ctrl.EditButton();" ng-show="Ctrl.HasImg">  ' +
 '           <md-icon md-font-icon="icon-pencil" ng-hide="Ctrl.EditMode"></md-icon>  ' +
 '           <md-icon md-font-icon="icon-close" ng-show="Ctrl.EditMode"></md-icon>  ' +
