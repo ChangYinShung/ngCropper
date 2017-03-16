@@ -74,6 +74,7 @@
         vm.ZoomTo = zoomTo;
         vm.EditButton = editButton;
         vm.LoadButton = LoadButton;
+        vm.CancelButton = CancelButton;
         //todo
         vm.Error = Error;
 
