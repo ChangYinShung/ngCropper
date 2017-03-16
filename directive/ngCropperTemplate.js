@@ -126,20 +126,18 @@
                     //then set file and dataurl
                     Cropper.encode((vm.file = xhr.response))
                         .then(function (dataUrl) {
-                            vm.DataUrl = dataUrl;
-
+                            vm.DataUrl = vm.ogImage = dataUrl;
                         });
                 }
                 xhr.send();
             }
             if (vm.resultImg) {
-                vm.DataUrl = vm.resultImg;
+                vm.DataUrl = vm.ogImage = vm.resultImg;
                 vm.HasImg = true;
                 vm.file = Cropper.decode(vm.resultImg);
             }
 
         }
-
 
 
 
