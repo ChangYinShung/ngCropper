@@ -40,6 +40,8 @@ Bootstrap 3  Customlized Template
     width=""
     height=""
     result-img=""
+    quility=""
+    imgType=""
     is-done=""
     ctrl="">
 ```
@@ -47,7 +49,9 @@ Bootstrap 3  Customlized Template
 `width、height` :長寬(number)  width:0,height:0 不固定長寬  
 `result-img` : 上傳存檔圖片(base64)  
 `is-done`:判斷是否有編輯按鈕  
-`ctrl`: Controller  
+`quility`:圖片品質 0-1，預設值:1  
+`img-type`:'jpeg' or 'png'，預設值:jpeg
+`ctrl`: Controller  
 Read [Demo code](http://github.com/koorgoo/ngCropper/tree/master/demo) for detailed example.
 
 
