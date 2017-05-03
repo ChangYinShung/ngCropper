@@ -11,6 +11,8 @@
                 width: '=',
                 height: '=',
                 resultImg: '=',
+                imgType:'@?', //圖片類型 : png or jpeg
+                quility:'@?', //圖片品質:Range 0-1
                 imgUrl: '@?',
                 isDone: '=?',
                 ctrl: '=?'
@@ -43,6 +45,8 @@
         vm.width;
         vm.height;
         vm.isDone;
+        vm.quility = angular.isNumber(vm.quility) ? vm.quility : 1; //品質
+        vm.imgType = vm.imgType ? 'image/jpeg' : 'image/' + vm.imgType;
         vm.ctrl = vm;
         //var parameters
         var ratio = 0;//finalSize.width / finalSize.height;
@@ -166,7 +170,7 @@
             var dataUrl = $scope.cropper.first('getCroppedCanvas', {
                 width: w,
                 height: h
-            }).toDataURL();
+            }).toDataURL(vm.imgType, vm.quility);
             vm.resultImg = vm.ogImage = dataUrl;
             vm.HasImg = true;
             vm.ShowCancel = false;
